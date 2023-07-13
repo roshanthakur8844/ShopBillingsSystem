@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shop Billing System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shop Billing System</h1>
+        <form id="billingForm">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" placeholder="Product Name" required>
+            
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" placeholder="Quantity" required>
+            
+            <button type="submit">Add to Bill</button>
+        </form>
+        
+        <h2>Billing Details:</h2>
+        <div id="billingDetails"></div>
+        
+        <button onclick="downloadBill()">Download Bill</button>
+    </div>
+
+    <script>
+        let billItems = [];
+
+        document.getElementById("billingForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let productName = document.getElementById("productName").value;
+            let quantity = parseInt(document.getElementById("quantity").value);
+
+            let item = { productName, quantity };
+            billItems.push(item);
+
+            displayBillingDetails();
+        });
+
+        function displayBillingDetails() {
+            let billingDetails = document.getElementById("billingDetails");
+            billingDetails.innerHTML = "";
+
+            for (let i = 0; i < billItems.length; i++) {
+                let item = billItems[i];
+
+                let listItem = document.createElement("p");
+                listItem.innerHTML = `Product: ${item.productName}, Quantity: ${item.quantity}`;
+                billingDetails.appendChild(listItem);
+            }
+        }
+
+        function downloadBill() {
+            let billContent = "Billing Details:\n\n";
+
+            for (let i = 0; i < billItems.length; i++) {
+                let item = billItems[i];
+                billContent += `Product: ${item.productName}, Quantity: ${item.quantity}\n`;
+            }
+
+            let blob = new Blob([billContent], { type: "text/plain;charset=utf-8" });
+            let filename = "bill.txt";
+
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.click();
+            }
+        }
+    </script>
+</body>
+</html>
